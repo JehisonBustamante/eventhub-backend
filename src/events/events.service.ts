@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { Event } from './entities/event.entity';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class EventsService {
@@ -12,7 +13,7 @@ export class EventsService {
     private readonly eventRepository: Repository<Event>, // Inyección del repositorio de TypeORM para Events
   ) {}
 
-  async create(createEventDto: CreateEventDto) {
+  async create(createEventDto: CreateEventDto, user: User) {
     const eventDate = new Date(createEventDto.date);
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Establece al inicio del día para comparar fechas
@@ -22,18 +23,26 @@ export class EventsService {
       throw new BadRequestException('The event date cannot be in the past');
     }
 
-    const event = this.eventRepository.create(createEventDto); // Crea la instancia de la entidad
+    const event = this.eventRepository.create({
+      ...createEventDto,
+      user, // Asocia automáticamente el usuario autenticado
+    });
     return await this.eventRepository.save(event); // Persiste en la base de datos
   }
 
   async findAll() {
-    // Retorna todos los registros de eventos
-    return await this.eventRepository.find();
+    // Retorna todos los registros de eventos incluyendo la relación con el usuario
+    return await this.eventRepository.find({
+      relations: ['user'],
+    });
   }
 
   async findOne(id: string) {
-    // Busca un evento por su ID o lanza error si no existe
-    const event = await this.eventRepository.findOneBy({ id });
+    // Busca un evento por su ID incluyendo la relación con el usuario
+    const event = await this.eventRepository.findOne({
+      where: { id },
+      relations: ['user'],
+    });
     if (!event) {
       throw new NotFoundException(`Event with ID "${id}" not found`);
     }

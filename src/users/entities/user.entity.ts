@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert, OneToMany } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { Event } from '../../events/entities/event.entity';
 
 @Entity() // Tabla de usuarios en la base de datos
 export class User {
@@ -14,6 +15,9 @@ export class User {
 
   @Column()
   name: string;
+
+  @OneToMany(() => Event, (event) => event.user) // Un usuario puede tener muchos eventos
+  events: Event[];
 
   @BeforeInsert() // Hook de TypeORM que se ejecuta antes de insertar un nuevo registro
   async hashPassword() {

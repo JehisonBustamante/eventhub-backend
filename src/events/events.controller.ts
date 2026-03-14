@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
@@ -10,8 +10,9 @@ export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
 
   @Post() // Crear un nuevo evento
-  create(@Body() createEventDto: CreateEventDto) {
-    return this.eventsService.create(createEventDto);
+  create(@Body() createEventDto: CreateEventDto, @Req() req) {
+    // req.user contiene los datos del usuario autenticado (inyectado por Passport)
+    return this.eventsService.create(createEventDto, req.user);
   }
 
   @Get() // Obtener lista de todos los eventos
