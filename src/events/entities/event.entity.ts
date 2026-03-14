@@ -1,14 +1,14 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
+@Entity() // Define esta clase como una tabla en la base de datos
 export class Event {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn('uuid') // Genera automáticamente un ID único tipo UUID
   id: string;
 
   @Column()
   title: string;
 
-  @Column('text')
+  @Column('text') // Columna de tipo texto para descripciones largas
   description: string;
 
   @Column()
@@ -17,6 +17,6 @@ export class Event {
   @Column()
   location: string;
 
-  @Column()
+  @Column() // Por ahora almacenamos el nombre del organizador como string
   organizer: string;
 }
