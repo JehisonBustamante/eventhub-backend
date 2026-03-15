@@ -16,7 +16,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   // Este método valida el contenido del token (el payload)
   async validate(payload: any) {
-    // Lo que se retorne aquí se inyectará en req.user de las rutas protegidas
-    return { userId: payload.sub, email: payload.email };
+    // Lo que se retorne aquí se inyectará en req.user de las rutas protegidas.
+    // Usamos 'id' para que coincida con lo que TypeORM espera en las relaciones.
+    return { id: payload.sub, email: payload.email };
   }
 }

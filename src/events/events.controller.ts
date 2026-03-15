@@ -4,11 +4,11 @@ import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
-@UseGuards(JwtAuthGuard) // Protege todos los endpoints de este controlador con JWT
 @Controller('events')
 export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post() // Crear un nuevo evento
   create(@Body() createEventDto: CreateEventDto, @Req() req) {
     // req.user contiene los datos del usuario autenticado (inyectado por Passport)
@@ -25,11 +25,13 @@ export class EventsController {
     return this.eventsService.findOne(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch(':id') // Actualizar parcialmente un evento
   update(@Param('id') id: string, @Body() updateEventDto: UpdateEventDto) {
     return this.eventsService.update(id, updateEventDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id') // Eliminar un evento
   remove(@Param('id') id: string) {
     return this.eventsService.remove(id);

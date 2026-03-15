@@ -12,8 +12,12 @@ async function bootstrap() {
       whitelist: true, // Remueve campos que no están en el DTO
       forbidNonWhitelisted: true, // Lanza error si hay campos no permitidos
       transform: true, // Transforma los tipos automáticamente (ej. string a Date o number)
+      errorHttpStatusCode: 400, // Asegura que el error sea 400
     }),
   );
+
+  // Habilita CORS para permitir que el frontend se conecte
+  app.enableCors();
 
   // Escucha en el puerto configurado o en el 3000 por defecto
   await app.listen(process.env.PORT ?? 3000);
