@@ -36,4 +36,10 @@ export class EventsController {
   remove(@Param('id') id: string) {
     return this.eventsService.remove(id);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/join') // Unirse a un evento
+  join(@Param('id') id: string, @Req() req) {
+    return this.eventsService.join(id, req.user);
+  }
 }

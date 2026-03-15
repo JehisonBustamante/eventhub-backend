@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, ManyToMany, JoinTable } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 
 @Entity() // Define esta clase como una tabla en la base de datos
@@ -23,4 +23,8 @@ export class Event {
 
   @ManyToOne(() => User, (user) => user.events) // Muchos eventos pertenecen a un solo usuario
   user: User;
+
+  @ManyToMany(() => User, (user) => user.joinedEvents) // Muchos usuarios pueden asistir a un evento
+  @JoinTable() // Lado dueño de la relación Muchos-a-Muchos
+  attendees: User[];
 }
