@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateEventDto } from './dto/create-event.dto';
@@ -52,11 +52,31 @@ export class EventsService {
     // Verifica si el usuario ya está unido
     const isAlreadyJoined = event.attendees.some((attendee) => attendee.id === user.id);
     if (isAlreadyJoined) {
-      throw new BadRequestException('You are already joined to this event');
+      throw new ConflictException('You are already joined to this event');
     }
 
     // Añade al usuario a la lista de asistentes
     event.attendees.push(user);
+
+    return await this.eventRepository.save(event);
+  }
+
+  async leave(id: string, user: User) {
+    const event = await this.findOne(id);
+
+    // Inicializa el array de asistentes si no existe
+    if (!event.attendees) {
+      event.attendees = [];
+    }
+
+    // Verifica si el usuario está en la lista de asistentes
+    const attendeeIndex = event.attendees.findIndex((attendee) => attendee.id === user.id);
+    if (attendeeIndex === -1) {
+      throw new BadRequestException('You are not registered for this event');
+    }
+
+    // Remueve al usuario de la lista de asistentes
+    event.attendees.splice(attendeeIndex, 1);
 
     return await this.eventRepository.save(event);
   }

@@ -42,4 +42,10 @@ export class EventsController {
   join(@Param('id') id: string, @Req() req) {
     return this.eventsService.join(id, req.user);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id/leave') // Salirse de un evento
+  leave(@Param('id') id: string, @Req() req) {
+    return this.eventsService.leave(id, req.user);
+  }
 }
