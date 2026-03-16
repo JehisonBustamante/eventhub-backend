@@ -1,0 +1,30 @@
+services:
+  database:
+    image: postgres:15-alpine
+    container_name: eventhub-db
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-1234}
+      POSTGRES_DB: ${DB_DATABASE:-eventhub}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: .
+    container_name: eventhub-backend
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-1234}
+      DB_DATABASE: ${DB_DATABASE:-eventhub}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      - database
+
+volumes:
+  postgres_data:
