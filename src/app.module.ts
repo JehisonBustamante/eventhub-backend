@@ -17,16 +17,22 @@ import { AuthModule } from './auth/auth.module';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get<string>('DB_HOST', 'localhost'),
-        port: configService.get<number>('DB_PORT', 5432),
-        username: configService.get<string>('DB_USERNAME', 'postgres'),
-        password: configService.get<string>('DB_PASSWORD', '1234'),
-        database: configService.get<string>('DB_DATABASE', 'eventhub'),
-        autoLoadEntities: true, // Carga automáticamente las entidades registradas
-        synchronize: true, // Crea las tablas en la base de datos automáticamente (solo para desarrollo)
-      }),
+      useFactory: (configService: ConfigService) => {
+        const host = configService.get<string>('DB_HOST', 'localhost');
+        return {
+          type: 'postgres',
+          host: host,
+          port: configService.get<number>('DB_PORT', 5432),
+          username: configService.get<string>('DB_USERNAME', 'postgres'),
+          password: configService.get<string>('DB_PASSWORD', '1234'),
+          database: configService.get<string>('DB_DATABASE', 'eventhub'),
+          autoLoadEntities: true, // Carga automáticamente las entidades registradas
+          synchronize: true, // Crea las tablas en la base de datos automáticamente (solo para desarrollo)
+          ssl: host.includes('supabase')
+            ? { rejectUnauthorized: false }
+            : false,
+        };
+      },
     }),
     EventsModule,
     UsersModule,
